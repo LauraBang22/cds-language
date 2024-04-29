@@ -25,8 +25,9 @@ def load_model():
 
 #Load the data we'll be working with
 def load_data():
-    filename = os.path.join("..", "in", "Spotify Million Song Dataset_exported.csv")
+    filename = os.path.join("in", "Spotify Million Song Dataset_exported.csv")
     data = pd.read_csv(filename)
+    data["artist"] = data["artist"].str.lower()
     return data
 
 #A function that finds the most similar words, using the model, when given a word
@@ -37,7 +38,8 @@ def most_similar(model, args):
 
 #A function to find only the songs of a given artist
 def select_artist(data, args):
-    search_songs = list(data[data["artist"]== args.artist]["text"])
+    search_artist = args.artist.lower()
+    search_songs = list(data[data["artist"]== search_artist]["text"])
     return search_songs
 
 #A function that looks through all the songs of the particular artist and counts up if it contains one of the words

@@ -18,7 +18,6 @@ def load_data():
     data.dropna(inplace=True)
     return data
 
-
 def generate_labels(classifier, data):
     labels = []
     for line in data["Sentence"]:
@@ -36,11 +35,21 @@ def save_data(simple_data):
     simple_data.to_csv(outpath)
 
 def main():
+    tracker = EmissionsTracker(project_name="sentiment classification",
+                           experiment_id="sentiment_classifier",
+                           output_dir=outfolder,
+                           output_file="emissions_sentiment.csv")
+    tracker.start_task("")
     classifier = load_model()
+
     data = load_data()
     labels, data = generate_labels(classifier, data)
+    tracker.stop_task()
+
     simple_data = add_labels(labels, data)
     save_data(simple_data)
+
+    tracker.stop()
 
 if __name__ == "__main__":
   main()
