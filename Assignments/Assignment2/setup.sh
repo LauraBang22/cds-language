@@ -7,3 +7,5 @@ source ./env/bin/activate
 # install requirements
 pip install --upgrade pip
 pip install -r requirements.txt
+
+deactivate

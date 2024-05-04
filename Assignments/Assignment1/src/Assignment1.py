@@ -23,20 +23,18 @@ def data_processing(nlp):
             with open(filepath, encoding="latin-1") as f: 
                 text = f.read() #opening all the files in one text
                 
-            pattern = r"<.*?>"
+            pattern = r"<.*?>" #cleaning the text
             cleaned_text = re.sub(pattern, "", text)
 
             doc = nlp(cleaned_text)
             
-            #2.1 Extract relative frequency of Nouns, Verbs, Adjective, and Adverbs per 10,000 words
-            
-            #First we define four variables, where the count of the different POS are 0        
+            #Define four variables, where the count of the different POS are 0        
             noun_count = 0
             verb_count = 0
             adj_count = 0
             adv_count = 0
             
-            #Then we create a "for loop", where for each token of the specific POS, then it'll and one to the counter.        
+            #"for loop", where for each token of the specific POS, then it'll andd one to the counter.        
             for token in doc:
                 if token.pos_ == "NOUN":
                     noun_count += 1
@@ -47,13 +45,11 @@ def data_processing(nlp):
                 elif token.pos_ == "ADV":
                     adv_count += 1
                     
-            #Then we try to find the relative frequency of each of the POS
+            #Relative frequency of each of the POS
             relative_freq_noun = round((noun_count/len(doc)) * 10000, 2)
             relative_freq_verb = round((verb_count/len(doc)) * 10000, 2)
             relative_freq_adj = round((adj_count/len(doc)) * 10000, 2)
             relative_freq_adv = round((adv_count/len(doc)) * 10000, 2)
-            
-            #2.2 Extract total number of unique PER, LOC, ORGS
             
             persons = set() #First create a new set
             for ent in doc.ents:
@@ -73,9 +69,9 @@ def data_processing(nlp):
                     locations.add(ent.text)
             num_locations = len(locations)
             
-            # 3. For each sub-folder (a1, a2, a3, ...) save a table which shows the information                
+            #Save the results               
             file_info = [filename, relative_freq_noun, relative_freq_verb, relative_freq_adj, relative_freq_adv, 
-                        num_persons, num_organisations, num_locations] #
+                        num_persons, num_organisations, num_locations] 
             
             folder_info.append(file_info)
             
@@ -91,17 +87,17 @@ def main():
     tracker = EmissionsTracker(project_name="assignment1",
                         experiment_id="assignment1",
                         output_dir=os.path.join("..", "Assignment5", "emissions"),
-                        output_file="assignment1.csv")
+                        output_file="emissions.csv")
     
     tracker.start_task("load_model")
     nlp = load_model()
-    model_emissions = tracker.stop_task
+    model_emissions = tracker.stop_task()
 
     tracker.start_task("data_processing")
     data_processing(nlp)
-    processing_emissions = tracker.stop_task
+    processing_emissions = tracker.stop_task()
 
-    tracker.stop
+    tracker.stop()
 
 if __name__ == "__main__":
     main()

@@ -11,14 +11,14 @@ import utils.classifier_utils as clf
 # Machine learning stuff
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split, ShuffleSplit
+from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from codecarbon import EmissionsTracker
 
 # Visualisation
 import matplotlib.pyplot as plt
 
-from joblib import dump, load
+from joblib import dump
 
 def load_data():
     filename = os.path.join("in", "fake_or_real_news.csv")
@@ -55,12 +55,6 @@ def predictions(X_test_feats, classifier):
 
     return y_pred
 
-def important_features(vectorizer, y_train, classifier):
-    features = clf.show_features(vectorizer, y_train, classifier, n=20)
-    #text_file = open("out/logistic_regression/features.txt", 'w')
-    #text_file.write(features)
-    #text_file.close()
-
 def confusion_matrix(classifier, X_train_feats, y_train):
     metrics.ConfusionMatrixDisplay.from_estimator(classifier, X_train_feats,
                                                   y_train,
@@ -83,51 +77,48 @@ def cross_validation(vectorizer, X, y):
     clf.plot_learning_curve(estimator, title, X_vect, y, cv=cv, n_jobs=4)
     plt.savefig("out/logistic_regression/cross_validation.png")
 
-def save_model(classifier, vectorizer):
+def save_model(classifier):
     dump(classifier, os.path.join("models","LR_classifier.joblib"))
-    dump(vectorizer, os.path.join("models","tfidf_vectorizer.joblib"))
 
 def main():
     tracker = EmissionsTracker(project_name="assignment2_logistic_regression",
                         experiment_id="assignment2_logistic_regression",
                         output_dir=os.path.join("..", "Assignment5", "emissions"),
-                        output_file="assignment2_logistic_regression.csv")
+                        output_file="emissions.csv")
 
     tracker.start_task("load_data")
     X, y, X_train, X_test, y_train, y_test = load_data()
-    data_emissions = tracker.stop_task
+    data_emissions = tracker.stop_task()
 
     tracker.start_task("vectorizer")
     vectorizer = create_vectorizer()
-    vectorizer_emissions = tracker.stop_task
+    vectorizer_emissions = tracker.stop_task()
 
     tracker.start_task("fitting")
     X_train_feats, X_test_feats, classifier = fitting_data(X_train, X_test, y_train, y_test, vectorizer)
-    fitting_emissions = tracker.stop_task
+    fitting_emissions = tracker.stop_task()
 
     tracker.start_task("predictions")
     y_pred = predictions(X_test_feats, classifier)
-    predictions_emissions = tracker.stop_task
-
-    tracker.start_task("features")
-    important_features(vectorizer, y_train, classifier)
-    features_emissions = tracker.stop_task
+    predictions_emissions = tracker.stop_task()
 
     tracker.start_task("confusion_matrix")
     confusion_matrix(classifier, X_train_feats, y_train)
-    matrix_emissions = tracker.stop_task
+    matrix_emissions = tracker.stop_task()
 
     tracker.start_task("classification_report")
     classification_report(y_test, y_pred)
-    report_emissions = tracker.stop_task
+    report_emissions = tracker.stop_task()
 
     tracker.start_task("cross_validation")
     cross_validation(vectorizer, X, y)
-    cross_validation_emissions = tracker.stop_task
+    cross_validation_emissions = tracker.stop_task()
 
-    tracker.stop
+    tracker.start_task("save_model")
+    save_model(classifier)
+    save_model_emission = tracker.stop_task()
 
-    save_model(classifier, vectorizer)
+    tracker.stop()
 
 
 if __name__ == "__main__":

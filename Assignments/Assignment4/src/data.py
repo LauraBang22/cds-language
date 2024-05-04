@@ -5,11 +5,13 @@ import sys
 sys.path.append("..")
 import pandas as pd
 import matplotlib.pyplot as plt
+from codecarbon import EmissionsTracker
+from tqdm import tqdm
 
 def load_model():
     classifier = pipeline("text-classification", 
                         model="j-hartmann/emotion-english-distilroberta-base", 
-                        top_k=None)
+                        return_all_scores=False)
     return classifier
 
 def load_data():
@@ -20,9 +22,9 @@ def load_data():
 
 def generate_labels(classifier, data):
     labels = []
-    for line in data["Sentence"]:
-        label = classifier(line)
-        labels.append(label[line][0]["label"])
+    for line in tqdm(data["Sentence"]):
+            label = classifier(line)
+            labels.append(label[0]["label"])
     return labels
 
 def add_labels(labels, data):
@@ -35,19 +37,30 @@ def save_data(simple_data):
     simple_data.to_csv(outpath)
 
 def main():
-    tracker = EmissionsTracker(project_name="sentiment classification",
-                           experiment_id="sentiment_classifier",
-                           output_dir=outfolder,
-                           output_file="emissions_sentiment.csv")
-    tracker.start_task("")
+    tracker = EmissionsTracker(project_name="assignment4_data",
+                           experiment_id="assignment4_data",
+                           output_dir=os.path.join("..", "Assignment5", "emissions"),
+                           output_file="emissions.csv")
+
+    tracker.start_task("load_model")
     classifier = load_model()
+    load_model_emissions = tracker.stop_task()
 
+    tracker.start_task("load_data")
     data = load_data()
-    labels, data = generate_labels(classifier, data)
-    tracker.stop_task()
+    load_data_emissions = tracker.stop_task()
 
+    tracker.start_task("generate_labels")
+    labels = generate_labels(classifier, data)
+    generate_labels_emissions = tracker.stop_task()
+
+    tracker.start_task("simple_data")
     simple_data = add_labels(labels, data)
+    simple_data_emissions = tracker.stop_task()
+
+    tracker.start_task("save_data")
     save_data(simple_data)
+    save_data_emissions = tracker.stop_task()
 
     tracker.stop()
 

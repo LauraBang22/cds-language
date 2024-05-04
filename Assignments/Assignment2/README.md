@@ -15,16 +15,22 @@ In this repository you'll find four subfolders.
 I have also created a requirements.txt and a setup.sh file for you to run, for the setting up a virtual enviroment to run the code in.
 
 ### Data
-The data I have used in this assignment, is called **Fake News Dataset**. 
+The data I have used in this assignment, is called **Fake News Dataset**. The data can be found [here](https://www.kaggle.com/datasets/jillanisofttech/fake-or-real-news). You'll need to download it into the ```in``` folder in this repository. 
+
 
 ### Reproducebility 
-I have created a setup.sh file that can be run from the terminal using the code ```bash setup.sh```. When running it you create a virtual environment where you run the accompanying ```requirements.txt```. 
+I have created a ```setup.sh``` file that can be run from the terminal using the code: 
+```
+bash setup.sh
+``` 
+When running it you create a virtual environment where you run the accompanying ```requirements.txt```. It also installs the model that is needed in the code.
 
-I have created to different scripts for this assignment. One is for running a logistic regression model on the data. To run the code of that script in the terminal you can use the code ```python src/logistic_regression.py```
-
-The other script is for running a neural network model on the data. To run the code of that script in the terminal you can use the code ```python src/neural_network.py```
-
-Once you have run the code, be sure to run ```deactivate``` in you terminal to shut down the virtual environment again.
+I have also created a ```run.sh``` file that can be run from the terminal using the code:
+```
+bash run.sh
+```
+It opens the virtual environment again, then runs the scripts I have written to solve the task given, and finishes off by deactivating the virtual environment. 
+The first script is ```logistic_regression.py```, that trains a logistic regression model to predict labels for the data. The second script is ```neural_network.py```, that trains a MLP Classifier, which is a type of neural network model, to predict labels for the data. The third script is ```vectorizer.py```, which creates and saves the a vectorizer model for later possible use.
 
 ### Results
 #### Logistic Regression
@@ -32,7 +38,7 @@ When running the logistic regression model on the data, it gives an accuracy of 
 
 #### Neural Network
 When running the neural network model on the data, it  gives an accuracy of 84%, which is one percent better than the logistic regression model.
-At first glance the loss curve for the model looks very good. It decreases and stabilizes, which is good. I don't have something to compare it to, which makes it difficult to tell is the model is either underfitting or overfitting. That is something that could be worked on adding. 
+At first glance the loss curve for the model looks very good. It decreases and stabilizes, which is good. I don't have something to compare it to, which makes it difficult to tell is the model is either underfitting or overfitting. That is something that could be worked on adding to the code. 
 
 #### CodeCarbon
 I have used the package ```CodeCarbon``` to measure the environmantal impact of running the code in this repository. Please see Assignment 5 for the results of that.

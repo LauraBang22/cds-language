@@ -18,14 +18,26 @@ In this repository you'll find ttwo subfolders.
 I have also created a requirements.txt and a setup.sh file for you to run, for the setting up a virtual enviroment to run the code in.
 
 ### Data
-The data I have used in this assignment, is called **57,650 Spotify Songs**. More information about the data can be found  [here](https://www.kaggle.com/datasets/joebeachcapital/57651-spotify-songs).
+The data I have used in this assignment, is called **57,650 Spotify Songs**. More information about the data can be found  [here](https://www.kaggle.com/datasets/joebeachcapital/57651-spotify-songs). You'll need to download it into the ```in``` folder in this repository. 
 
 ### Reproducebility 
-I have created a setup.sh file that can be run from the terminal using the code ```bash setup.sh```. When running it you create a virtual environment where you run the accompanying ```requirements.txt```. 
+I have created a ```setup.sh``` file that can be run from the terminal using the code: 
+```
+bash setup.sh
+``` 
+When running it you create a virtual environment where you run the accompanying ```requirements.txt```. It also installs the model that is needed in the code.
 
-To run the code of the script you have to run ```python src/Assignment3.py --artist "{ARTIST}" -- "{SEARCH TERM}"```, where you can choose an artist and search term your self. The code is not case sensitive.
+To run the code of the script you have to run this in the terminal: 
+```
+python src/Assignment3.py --artist "{ARTIST}" -- "{SEARCH TERM}"
+``` 
+You can choose an artist and a searchterm yourself.
 
-Once you have run the code, be sure to run ```deactivate``` in you terminal to shut down the virtual environment again.
+I have also created a ```run.sh``` file that can be run from the terminal using the code:
+```
+bash run.sh
+```
+The ```run.sh``` opens the virtual environment again and contians code seaching for a specific artist and searhterm, that have been tested and works, and then deactivates the virtual environment again.
 
 ### Results
 When running this code, you'll get a percentage of songlyrics in the dataset, that contains the word or one of the five most similar words.

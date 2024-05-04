@@ -14,9 +14,12 @@ from sklearn.neural_network import MLPClassifier
 from sklearn import metrics
 from codecarbon import EmissionsTracker
 
+import matplotlib
+matplotlib.use('Agg')  # Set backend
+
 import matplotlib.pyplot as plt
 
-from joblib import dump, load
+from joblib import dump
 
 
 def load_data():
@@ -62,7 +65,8 @@ def confusion_matrix(classifier, X_train_feats, y_train):
                                                   y_train,
                                                   cmap = plt.cm.Blues,
                                                   labels = ["FAKE", "REAL"])
-    plt.savefig("out/neural_network/confusion_matrix_logistic.png")
+    plt.savefig("out/neural_network/confusion_matrix_neural.png")
+    plt.close()
 
 def classification_report(y_test, y_pred):
     classifier_metrics = metrics.classification_report(y_test, y_pred)
@@ -77,47 +81,49 @@ def loss_curve(classifier):
     plt.ylabel('Loss score')
     plt.savefig("out/neural_network/loss_curve.png")
 
-def save_model(classifier, vectorizer):
+def save_model(classifier):
     dump(classifier, os.path.join("models","MLP_classifier.joblib"))
-    dump(vectorizer, os.path.join("models","tfidf_vectorizer.joblib"))
+
 
 def main():
-    tracker = EmissionsTracker(project_name="assignment2_logistic_regression",
-                        experiment_id="assignment2_logistic_regression",
+    tracker = EmissionsTracker(project_name="assignment2_neural_network",
+                        experiment_id="assignment2_neural_network",
                         output_dir=os.path.join("..", "Assignment5", "emissions"),
-                        output_file="assignment2_logistic_regression.csv")
+                        output_file="emissions.csv")
 
     tracker.start_task("load_data")
     X, y, X_train, X_test, y_train, y_test = load_data()
-    data_emissions = tracker.stop_task
+    data_emissions = tracker.stop_task()
 
     tracker.start_task("vectorizer")
     vectorizer = create_vectorizer()
-    vectorizer_emissions = tracker.stop_task
+    vectorizer_emissions = tracker.stop_task()
 
     tracker.start_task("fitting")
     X_train_feats, X_test_feats, classifier = fitting_data(X_train, X_test, y_train, y_test, vectorizer)
-    fitting_emissions = tracker.stop_task
+    fitting_emissions = tracker.stop_task()
 
     tracker.start_task("predictions")
     y_pred = predictions(X_test_feats, classifier)
-    predictions_emissions = tracker.stop_task
+    predictions_emissions = tracker.stop_task()
 
     tracker.start_task("confusion_matrix")
     confusion_matrix(classifier, X_train_feats, y_train)
-    matrix_emissions = tracker.stop_task
+    matrix_emissions = tracker.stop_task()
 
     tracker.start_task("classification_report")
     classification_report(y_test, y_pred)
-    report_emissions = tracker.stop_task
+    report_emissions = tracker.stop_task()
 
     tracker.start_task("loss_curve")
     loss_curve(classifier)
-    loss_curve_emissions = tracker.stop_task
+    loss_curve_emissions = tracker.stop_task()
 
-    tracker.stop
+    tracker.start_task("save_model")
+    save_model(classifier)
+    save_model_emission = tracker.stop_task()
 
-    save_model(classifier, vectorizer)
+    tracker.stop()
 
 if __name__ == "__main__":
     main()

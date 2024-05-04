@@ -5,6 +5,7 @@ sys.path.append("..")
 import gensim.downloader as api
 import pandas as pd
 import argparse
+from codecarbon import EmissionsTracker
 
 #Define my argparse arguments for later use
 def parser():
@@ -57,13 +58,40 @@ def percent(song_counter, search_songs, args):
     return result
 
 def main():
+    tracker = EmissionsTracker(project_name="assignment3",
+                            experiment_id="assignment3",
+                            output_dir=os.path.join("..", "Assignment5", "emissions"),
+                            output_file="emissions.csv")
+
+    tracker.start_task("args")
     args = parser()
+    args_emissions = tracker.stop_task()
+
+    tracker.start_task("Load_model")
     model = load_model()
+    model_emissions = tracker.stop_task()
+
+    tracker.start_task("load_data")
     data = load_data()
+    data_emissions = tracker.stop_task()
+
+    tracker.start_task("most_similar")
     words = most_similar(model, args)
+    most_similar_emission = tracker.stop_task()
+
+    tracker.start_task("search_songs")
     search_songs = select_artist(data, args)
+    search_songs_emissions = tracker.stop_task()
+
+    tracker.start_task("song_counter")
     song_counter = relevant_songs(search_songs, words)
+    song_counter_emissions = tracker.stop_task()
+
+    tracker.start_task("results")
     result = percent(song_counter, search_songs, args)
+    result_emissions = tracker.stop_task()    
+
+    tracker.stop()
 
 if __name__ == "__main__":
     main()
